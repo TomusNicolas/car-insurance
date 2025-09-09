@@ -7,6 +7,7 @@ import com.example.carins.repo.InsurancePolicyRepository;
 import com.example.carins.web.dto.InsurancePolicyDto;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -46,5 +47,10 @@ public class InsurancePolicyService {
 
     public List<InsurancePolicy> listPolicies() {
         return policyRepository.findAll();
+    }
+
+    public boolean isInsurancePolicyValid(Long carId, LocalDate date) {
+        if (carId == null || date == null) return false;
+        return policyRepository.existsActiveOnDate(carId, date);
     }
 }
