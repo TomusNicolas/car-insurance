@@ -1,9 +1,11 @@
 package com.example.carins.web;
 
 import com.example.carins.model.Car;
+import com.example.carins.service.CarHistoryService;
 import com.example.carins.service.CarService;
 import com.example.carins.service.InsurancePolicyService;
 import com.example.carins.web.dto.CarDto;
+import com.example.carins.web.dto.CarHistoryResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +21,13 @@ public class CarController {
 
     private final CarService service;
     private final InsurancePolicyService policyService;
+    private final CarHistoryService historyService;
 
-    public CarController(CarService service, InsurancePolicyService policyService) {
+
+    public CarController(CarService service, InsurancePolicyService policyService, CarHistoryService historyService) {
         this.service = service;
         this.policyService = policyService;
+        this.historyService = historyService;
     }
 
     @GetMapping("/cars")
@@ -52,6 +57,12 @@ public class CarController {
 
         boolean valid = service.isInsuranceValid(carId, d);
         return ResponseEntity.ok(new InsuranceValidityResponse(carId, d.toString(), valid));
+    }
+
+    @GetMapping("/cars/{carId}/history")
+    public ResponseEntity<List<CarHistoryResponse>> getHistory(@PathVariable Long carId) {
+        List<CarHistoryResponse> events = historyService.getHistory(carId);
+        return ResponseEntity.ok(events);
     }
 
     private CarDto toDto(Car c) {
